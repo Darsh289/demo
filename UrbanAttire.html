@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urban-Attrire</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #000000;
+            --secondary: #FF6B6B;
+            --accent: #4ECDC4;
+            --light: #F7FFF7;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light);
+            transition: all 0.3s ease;
+        }
+        .auth-form {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        .nav-link.active {
+            color: var(--secondary);
+            border-bottom: 2px solid var(--secondary);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Auth Modal -->
+    <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="auth-form w-full max-w-md p-8 rounded-lg shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold" id="authTitle">Sign Up</h2>
+                <button id="closeAuthModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div id="signupForm">
+                <div class="mb-4">
+                    <input type="text" id="signupName" placeholder="Full Name" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent">
+                </div>
+                <div class="mb-4">
+                    <input type="email" id="signupEmail" placeholder="Email" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent">
+                </div>
+                <div class="mb-4">
+                    <input type="password" id="signupPassword" placeholder="Password" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent">
+                </div>
+                <button id="signupBtn" class="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition">Sign Up</button>
+                <p class="text-center mt-4">Already have an account? <button id="showLogin" class="text-secondary font-medium">Log In</button></p>
+            </div>
+            
+            <div id="loginForm" class="hidden">
+                <div class="mb-4">
+                    <input type="email" id="loginEmail" placeholder="Email" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent">
+                </div>
+                <div class="mb-4">
+                    <input type="password" id="loginPassword" placeholder="Password" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent">
+                </div>
+                <button id="loginBtn" class="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 transition">Log In</button>
+                <p class="text-center mt-4">Don't have an account? <button id="showSignup" class="text-secondary font-medium">Sign Up</button></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold">Urban-<span class="text-secondary">Attrire</span></span>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#" class="nav-link" data-page="home">Home</a>
+                    <a href="#" class="nav-link" data-page="category">Category</a>
+                    <a href="#" class="nav-link" data-page="trending">Trending</a>
+                    <a href="#" class="nav-link" data-page="about">About Us</a>
+                </nav>
+                <div class="flex items-center space-x-4">
+                    <button id="authBtn" class="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition">
+                        Sign Up
+                    </button>
+                    <button class="p-2 text-gray-700 hover:text-secondary">
+                        <i class="fas fa-shopping-cart"></i>
+                    </button>
+                    <button id="mobileMenuBtn" class="md:hidden p-2 text-gray-700">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="md:hidden hidden mt-4 pb-4">
+                <a href="#" class="block py-2 nav-link" data-page="home">Home</a>
+                <a href="#" class="block py-2 nav-link" data-page="category">Category</a>
+                <a href="#" class="block py-2 nav-link" data-page="trending">Trending</a>
+                <a href="#" class="block py-2 nav-link" data-page="about">About Us</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Login Required Message -->
+        <div id="loginRequired" class="text-center py-20">
+            <div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/72e3e9d5-69bd-42d7-92eb-ba6467483b18.png" alt="Stylish mannequin wearing contemporary streetwear against pastel pink background" class="w-full h-auto rounded-lg mb-6">
+                <h2 class="text-2xl font-bold mb-4">Welcome to StyleHub</h2>
+                <p class="mb-6">Please login or sign up to browse our fashion collection.</p>
+                <button id="showAuthBtn" class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition">Login / Sign Up</button>
+            </div>
+        </div>
+
+        <!-- Home Page -->
+        <div id="homePage" class="page">
+            <!-- Hero Section -->
+            <section class="relative mb-16">
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/15caedf0-873f-471e-aa46-560803ff6f86.png" alt="Fashion models of diverse ethnicities walking on runway wearing latest designer collections" class="w-full h-auto object-cover rounded-lg">
+                <div class="absolute inset-0 flex items-center justify-center text-center bg-black bg-opacity-40 rounded-lg">
+                    <div class="text-white max-w-2xl px-4">
+                        <h1 class="text-4xl md:text-5xl font-bold mb-4">Discover Your Style</h1>
+                        <p class="text-xl mb-6">Explore our exclusive collection of premium fashion</p>
+                        <button class="bg-white text-black px-6 py-3 rounded-lg hover:bg-gray-100 transition">Shop Now</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Featured Categories -->
+            <section class="mb-16">
+                <h2 class="text-3xl font-bold mb-8 text-center">Shop by Category</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="category-card relative rounded-lg overflow-hidden h-64 cursor-pointer group">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/e5e3151d-d484-4027-acbb-d937ee6e7cba.png" alt="Casual menswear collection featuring denim jackets, t-shirts and sneakers" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                        <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40">
+                            <h3 class="text-white text-2xl font-bold">Men</h3>
+                        </div>
+                    </div>
+                    <div class="category-card relative rounded-lg overflow-hidden h-64 cursor-pointer group">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/bef1af85-6bbf-4fdc-bf6d-172a20329d58.png" alt="Elegant womens dresses and accessories for evening occasions" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                        <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40">
+                            <h3 class="text-white text-2xl font-bold">Women</h3>
+                        </div>
+                    </div>
+                    <div class="category-card relative rounded-lg overflow-hidden h-64 cursor-pointer group">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/8b3c346a-88b3-4208-89bd-c9cb6545a2fb.png" alt="Colorful unisex streetwear and urban fashion pieces for teenagers" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                        <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40">
+                            <h3 class="text-white text-2xl font-bold">Teens</h3>
+                        </div>
+                    </div>
+                    <div class="category-card relative rounded-lg overflow-hidden h-64 cursor-pointer group">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/d35d6e77-f5b8-4194-b3cf-a7457d8ac826.png" alt="Cozy and comfortable kidswear with playful patterns and prints" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                        <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40">
+                            <h3 class="text-white text-2xl font-bold">Kids</h3>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- New Arrivals -->
+            <section class="mb-16">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold">New Arrivals</h2>
+                    <a href="#" class="text-secondary font-medium">View All</a>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300 cursor-pointer">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/1701a9a0-a2da-4b19-a16c-e38599f2de1a.png" alt="Premium leather jacket with asymmetrical zipper design" class="w-full h-64 object-cover">
+                        <div class="p-4">
+                            <div class="flex justify-between items-start">
+                                <h3 class="font-medium">Leather Jacket</h3>
+                                <span class="font-bold">₹1999</span>
+                            </div>
+                            <p class="text-gray-500 text-sm mt-1">Men's Outerwear</p>
+                        </div>
+                    </div>
+                    <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300 cursor-pointer">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/c7b6572a-0c3b-4315-8824-8fe7eae44a3a.png" alt="Silk evening gown with floral embroidery in pastel colors" class="w-full h-64 object-cover">
+                        <div class="p-4">
+                            <div class="flex justify-between items-start">
+                                <h3 class="font-medium">Silk Gown</h3>
+                                <span class="font-bold">₹2999</span>
+                            </div>
+                            <p class="text-gray-500 text-sm mt-1">Women's Dresses</p>
+                        </div>
+                    </div>
+                    <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300 cursor-pointer">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/940d636f-f575-4a6d-b701-b8251b126131.png" alt="Retro inspired high-top sneakers with bold color blocking" class="w-full h-64 object-cover">
+                        <div class="p-4">
+                            <div class="flex justify-between items-start">
+                                <h3 class="font-medium">Retro Sneakers</h3>
+                                <span class="font-bold">₹1299</span>
+                            </div>
+                            <p class="text-gray-500 text-sm mt-1">Footwear</p>
+                        </div>
+                    </div>
+                    <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300 cursor-pointer">
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/df59318b-10ff-49e0-82b3-6da64b033721.png" alt="Minimalist leather crossbody bag with gold hardware accents" class="w-full h-64 object-cover">
+                        <div class="p-4">
+                            <div class="flex justify-between items-start">
+                                <h3 class="font-medium">Crossbody Bag</h3>
+                                <span class="font-bold">₹8999</span>
+                            </div>
+                            <p class="text-gray-500 text-sm mt-1">Accessories</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Category Page -->
+        <div id="categoryPage" class="page hidden">
+            <div class="flex flex-col md:flex-row gap-8">
+                <div class="md:w-1/4 bg-white p-6 rounded-lg shadow-sm sticky top-24 h-fit">
+                    <h2 class="text-xl font-bold mb-6">Filters</h2>
+                    
+                    <div class="mb-6">
+                        <h3 class="font-medium mb-3">Categories</h3>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded text-secondary mr-2">
+                                <span>Men</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded text-secondary mr-2">
+                                <span>Women</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded text-secondary mr-2">
+                                <span>Teens</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="rounded text-secondary mr-2">
+                                <span>Kids</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="font-medium mb-3">Price Range</h3>
+                        <div class="flex items-center justify-between mb-2">
+                            <span>₹1000</span>
+                            <span>₹5000+</span>
+                        </div>
+                        <input type="range" class="w-full accent-secondary">
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="font-medium mb-3">Colors</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <div class="w-6 h-6 rounded-full bg-black cursor-pointer border-2 border-gray-300"></div>
+                            <div class="w-6 h-6 rounded-full bg-white cursor-pointer border-2 border-gray-300"></div>
+                            <div class="w-6 h-6 rounded-full bg-red-500 cursor-pointer border-2 border-gray-300"></div>
+                            <div class="w-6 h-6 rounded-full bg-blue-500 cursor-pointer border-2 border-gray-300"></div>
+                            <div class="w-6 h-6 rounded-full bg-green-500 cursor-pointer border-2 border-gray-300"></div>
+                            <div class="w-6 h-6 rounded-full bg-yellow-500 cursor-pointer border-2 border-gray-300"></div>
+                            <div class="w-6 h-6 rounded-full bg-gray-500 cursor-pointer border-2 border-gray-300"></div>
+                            <div class="w-6 h-6 rounded-full bg-purple-500 cursor-pointer border-2 border-gray-300"></div>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full bg-secondary text-white py-2 rounded-lg">Apply Filters</button>
+                </div>
+                
+                <div class="md:w-3/4">
+                    <div class="flex justify-between items-center mb-8">
+                        <div>
+                            <h2 class="text-3xl font-bold">All Products</h2>
+                            <p class="text-gray-500">203 items</p>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="mr-2">Sort by:</span>
+                            <select class="border rounded-lg px-3 py-1">
+                                <option>Popularity</option>
+                                <option>Price: Low to High</option>
+                                <option>Price: High to Low</option>
+                                <option>Newest First</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Product items would be dynamically loaded here -->
+                        <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300 cursor-pointer">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/3026713e-33ea-4bb7-be47-78a9a0bd5abb.png" alt="Oversized graphic t-shirt with abstract urban artwork in black and white" class="w-full h-64 object-cover">
+                            <div class="p-4">
+                                <div class="flex justify-between items-start">
+                                    <h3 class="font-medium">Graphic T-Shirt</h3>
+                                    <span class="font-bold">₹390</span>
+                                </div>
+                                <p class="text-gray-500 text-sm mt-1">Men's Top</p>
+                                <button class="w-full mt-3 bg-black text-white py-1.5 rounded-lg hover:bg-gray-800 transition">Add to Cart</button>
+                            </div>
+                        </div>
+                        
+                        <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300 cursor-pointer">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/da881674-c225-48fe-879c-6ed343b365c7.png" alt="High-waisted skinny jeans with distressed details in medium blue wash" class="w-full h-64 object-cover">
+                            <div class="p-4">
+                                <div class="flex justify-between items-start">
+                                    <h3 class="font-medium">Skinny Jeans</h3>
+                                    <span class="font-bold">₹7500</span>
+                                </div>
+                                <p class="text-gray-500 text-sm mt-1">Women's Bottom</p>
+                                <button class="w-full mt-3 bg-black text-white py-1.5 rounded-lg hover:bg-gray-800 transition">Add to Cart</button>
+                            </div>
+                        </div>
+                        
+                        <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300 cursor-pointer">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/c837d767-aaf2-402b-8ceb-4bfec7844ee8.png" alt="Unisex oversized hoodie with minimalist embroidery in neutral tones" class="w-full h-64 object-cover">
+                            <div class="p-4">
+                                <div class="flex justify-between items-start">
+                                    <h3 class="font-medium">Oversized Hoodie</h3>
+                                    <span class="font-bold">₹6999</span>
+                                </div>
+                                <p class="text-gray-500 text-sm mt-1">Top</p>
+                                <button class="w-full mt-3 bg-black text-white py-1.5 rounded-lg hover:bg-gray-800 transition">Add to Cart</button>
+                            </div>
+                        </div>
+                        
+                        <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300 cursor-pointer">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/14eba807-5839-453a-8d00-620cfa0c8cde.png" alt="Structured blazer with peak lapels and stretch fabric in navy blue" class="w-full h-64 object-cover">
+                            <div class="p-4">
+                                <div class="flex justify-between items-start">
+                                    <h3 class="font-medium">Stretch Blazer</h3>
+                                    <span class="font-bold">₹8790</span>
+                                </div>
+                                <p class="text-gray-500 text-sm mt-1">Men's Outerwear</p>
+                                <button class="w-full mt-3 bg-black text-white py-1.5 rounded-lg hover:bg-gray-800 transition">Add to Cart</button>
+                            </div>
+                        </div>
+                        
+                        <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300 cursor-pointer">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/f34246a5-feba-4f88-ba11-d59b58a3b170.png" alt="Flowy summer midi dress with tropical leaf pattern in cool tones" class="w-full h-64 object-cover">
+                            <div class="p-4">
+                                <div class="flex justify-between items-start">
+                                    <h3 class="font-medium">Summer Midi Dress</h3>
+                                    <span class="font-bold">₹2500</span>
+                                </div>
+                                <p class="text-gray-500 text-sm mt-1">Women's Dress</p>
+                                <button class="w-full mt-3 bg-black text-white py-1.5 rounded-lg hover:bg-gray-800 transition">Add to Cart</button>
+                            </div>
+                        </div>
+                        
+                        <div class="product-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300 cursor-pointer">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/b3552ed8-4221-491f-acfd-9e5d54c2ba33.png" alt="Retro running shoes with bold color blocking and cushioned soles" class="w-full h-64 object-cover">
+                            <div class="p-4">
+                                <div class="flex justify-between items-start">
+                                    <h3 class="font-medium">Retro Runners</h3>
+                                    <span class="font-bold">₹1490</span>
+                                </div>
+                                <p class="text-gray-500 text-sm mt-1">Footwear</p>
+                                <button class="w-full mt-3 bg-black text-white py-1.5 rounded-lg hover:bg-gray-800 transition">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-center mt-10">
+                        <button class="bg-white border border-black px-4 py-2 rounded-lg hover:bg-gray-100 transition">
+                            Load More
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trending Page -->
+        <div id="trendingPage" class="page hidden">
+            <section class="mb-16">
+                <h2 class="text-3xl font-bold mb-8 text-center">This Season's Trends</h2>
+                <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/c35b396b-1acd-4fc7-8673-cd1683e744a0.png" alt="Fashion moodboard showing trending colors, patterns and silhouettes for the current season" class="w-full h-auto rounded-lg mb-16">
+                
+                <div>
+                    <h3 class="text-2xl font-bold mb-6">Trending Styles</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="trend-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300 cursor-pointer">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/90398125-8c15-4d6b-bc56-3160fb704cc0.png" alt="Earthy toned organic cotton clothing in minimalist designs for sustainable fashion" class="w-full h-64 object-cover">
+                            <div class="p-4">
+                                <h3 class="font-bold">Sustainable Fashion</h3>
+                                <p class="text-gray-500 text-sm mt-1">Eco-friendly materials and ethical production</p>
+                            </div>
+                        </div>
+                        
+                        <div class="trend-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300 cursor-pointer">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/b7548261-d57f-48c0-8ab0-d4b03db454b6.png" alt="Oversized blazers paired with bicycle shorts for the modern work-from-home aesthetic" class="w-full h-64 object-cover">
+                            <div class="p-4">
+                                <h3 class="font-bold">Work From Home Chic</h3>
+                                <p class="text-gray-500 text-sm mt-1">Comfort meets professionalism</p>
+                            </div>
+                        </div>
+                        
+                        <div class="trend-card bg-white rounded-lg overflow-hidden shadow-md transition duration-300 cursor-pointer">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/80398857-edf1-4a77-8fc1-d1289907a6ed.png" alt="Neon bright activewear with reflective details for nighttime visibility" class="w-full h-64 object-cover">
+                            <div class="p-4">
+                                <h3 class="font-bold">Bright & Bold</h3>
+                                <p class="text-gray-500 text-sm mt-1">Vibrant colors making a statement</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-16">
+                    <h3 class="text-2xl font-bold mb-6">Featured Collections</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div class="collection-card relative rounded-lg overflow-hidden h-96 cursor-pointer group">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/2d9baea7-d1b3-491c-ae7f-a0041d88ea8b.png" alt="Minimalist capsule wardrobe essentials in neutral tones displayed on wooden hangers" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                            <div class="absolute inset-0 flex items-end p-6 bg-gradient-to-t from-black via-transparent to-transparent">
+                                <div>
+                                    <h3 class="text-white text-2xl font-bold">Capsule Wardrobe</h3>
+                                    <p class="text-white text-opacity-80">Essentials that last</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="collection-card relative rounded-lg overflow-hidden h-96 cursor-pointer group">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/b8ac1c91-6df4-43b5-babf-234aa15c4775.png" alt="Streetwear models posing with bold graphic prints and layered outfits for urban fashion" class="w-full h-full object-cover transition duration-500 group-hover:scale-105">
+                            <div class="absolute inset-0 flex items-end p-6 bg-gradient-to-t from-black via-transparent to-transparent">
+                                <div>
+                                    <h3 class="text-white text-2xl font-bold">Urban Streetwear</h3>
+                                    <p class="text-white text-opacity-80">Bold and edgy styles</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- About Us Page -->
+        <div id="aboutPage" class="page hidden">
+            <section class="mb-16">
+                <h1 class="text-4xl font-bold mb-8">About StyleHub</h1>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+                    <div>
+                        <h2 class="text-2xl font-bold mb-4">Our Story</h2>
+                        <p class="mb-4">Founded in 2015, StyleHub began as a small boutique with a vision to make high-quality fashion accessible to everyone. What started as a single store has now grown into a global online destination for those who appreciate both style and substance.</p>
+                        <p>We carefully curate our collections, partnering with both established brands and emerging designers who share our commitment to quality, craftsmanship, and sustainability.</p>
+                    </div>
+                    <div>
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/80c9ec21-cf82-4625-8125-eca32f05f70b.png" alt="Our first boutique storefront with vintage signage in downtown location" class="w-full h-auto rounded-lg">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16 lg:flex-row-reverse">
+                    <div>
+                        <h2 class="text-2xl font-bold mb-4">Our Mission</h2>
+                        <p class="mb-4">At StyleHub, we believe fashion should be fun, inclusive, and responsible. We're committed to:</p>
+                        <ul class="space-y-2">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-secondary mr-2 mt-1"></i>
+                                <span>Providing exceptional customer service</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-secondary mr-2 mt-1"></i>
+                                <span>Supporting ethical and sustainable practices</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-secondary mr-2 mt-1"></i>
+                                <span>Curating timeless pieces alongside trend-driven items</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-secondary mr-2 mt-1"></i>
+                                <span>Celebrating diversity and body positivity</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/2397ff19-4d98-44cc-819f-fba3a94edbb8.png" alt="Team members of diverse backgrounds collaborating in a bright, modern office space" class="w-full h-auto rounded-lg">
+                    </div>
+                </div>
+                
+                <div class="bg-secondary bg-opacity-10 p-8 rounded-lg mb-16">
+                    <h2 class="text-2xl font-bold mb-6 text-center">Our Values</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="bg-white p-6 rounded-lg shadow-sm text-center">
+                            <div class="w-12 h-12 bg-secondary bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-leaf text-secondary text-xl"></i>
+                            </div>
+                            <h3 class="font-bold mb-2">Sustainability</h3>
+                            <p class="text-gray-600 text-sm">Ethical sourcing and eco-friendly materials</p>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-lg shadow-sm text-center">
+                            <div class="w-12 h-12 bg-secondary bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-hands-helping text-secondary text-xl"></i>
+                            </div>
+                            <h3 class="font-bold mb-2">Community</h3>
+                            <p class="text-gray-600 text-sm">Supporting local artisans and designers</p>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-lg shadow-sm text-center">
+                            <div class="w-12 h-12 bg-secondary bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-gem text-secondary text-xl"></i>
+                            </div>
+                            <h3 class="font-bold mb-2">Quality</h3>
+                            <p class="text-gray-600 text-sm">Only the best materials and craftsmanship</p>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-lg shadow-sm text-center">
+                            <div class="w-12 h-12 bg-secondary bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-star text-secondary text-xl"></i>
+                            </div>
+                            <h3 class="font-bold mb-2">Innovation</h3>
+                            <p class="text-gray-600 text-sm">Constantly evolving with fashion's future</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h2 class="text-2xl font-bold mb-6 text-center">Meet the Team</h2>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
+                        <div class="text-center">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/e309fe6a-38a5-494c-a713-e02ab1959fc0.png" alt="Smiling female fashion director with short blonde hair and bold red glasses" class="w-full h-auto rounded-full mb-3 mx-auto">
+                            <h3 class="font-bold">Sarah Johnson</h3>
+                            <p class="text-gray-500 text-sm">Creative Director</p>
+                        </div>
+                        <div class="text-center">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/d02da6fb-73db-43b9-b03b-e0c64dcdd655.png" alt="Young male buyer with stylish beard wearing a denim shirt" class="w-full h-auto rounded-full mb-3 mx-auto">
+                            <h3 class="font-bold">Michael Chen</h3>
+                            <p class="text-gray-500 text-sm">Head Buyer</p>
+                        </div>
+                        <div class="text-center">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/f699d81e-7264-4452-ae23-418a50131d29.png" alt="Experienced female marketing executive with silver bob hairstyle" class="w-full h-auto rounded-full mb-3 mx-auto">
+                            <h3 class="font-bold">Lisa Rodriguez</h3>
+                            <p class="text-gray-500 text-sm">Marketing Director</p>
+                        </div>
+                        <div class="text-center">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/d575c283-e6be-4be8-b0cc-602e697be98b.png" alt="Young designer with colorful hair and artistic tattoos" class="w-full h-auto rounded-full mb-3 mx-auto">
+                            <h3 class="font-bold">Jamal Williams</h3>
+                            <p class="text-gray-500 text-sm">Lead Designer</p>
+                        </div>
+                        <div class="text-center">
+                            <img src="https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/2203b9c0-8142-492d-a311-2b38bceaade9.png" alt="Tech-savvy operations manager with smart glasses and friendly smile" class="w-full h-auto rounded-full mb-3 mx-auto">
+                            <h3 class="font-bold">Priya Patel</h3>
+                            <p class="text-gray-500 text-sm">Operations Head</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Style<span class="text-secondary">Hub</span></h3>
+                    <p class="text-gray-400 mb-4">Your destination for curated fashion from around the world.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white">
+                            <i class="fab fa-pinterest-p"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4">Shop</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">New Arrivals</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Men</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Women</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Teens</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Kids</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4">Help</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Customer Service</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Track Order</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Returns & Exchanges</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Shipping Info</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">FAQs</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4">Contact</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-secondary mr-2 mt-1"></i>
+                            <span class="text-gray-400">123 Fashion St, Style District, CA 90210</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-phone-alt text-secondary mr-2 mt-1"></i>
+                            <span class="text-gray-400">(555) 123-4567</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-envelope text-secondary mr-2 mt-1"></i>
+                            <span class="text-gray-400">info@stylehub.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm mb-4 md:mb-0">© 2023 StyleHub. All rights reserved.</p>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white text-sm">Privacy Policy</a>
+                    <a href="#" class="text-gray-400 hover:text-white text-sm">Terms of Service</a>
+                    <a href="#" class="text-gray-400 hover:text-white text-sm">Accessibility</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simulate PHP session with localStorage
+        let isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+        let currentPage = 'home';
+        
+        // DOM Elements
+        const authBtn = document.getElementById('authBtn');
+        const showAuthBtn = document.getElementById('showAuthBtn');
+        const authModal = document.getElementById('authModal');
+        const closeAuthModal = document.getElementById('closeAuthModal');
+        const showLogin = document.getElementById('showLogin');
+        const showSignup = document.getElementById('showSignup');
+        const signupForm = document.getElementById('signupForm');
+        const loginForm = document.getElementById('loginForm');
+        const authTitle = document.getElementById('authTitle');
+        const loginRequired = document.getElementById('loginRequired');
+        const pages = document.querySelectorAll('.page');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        // Event Listeners
+        authBtn.addEventListener('click', toggleAuthModal);
+        showAuthBtn.addEventListener('click', toggleAuthModal);
+        closeAuthModal.addEventListener('click', toggleAuthModal);
+        showLogin.addEventListener('click', showLoginForm);
+        showSignup.addEventListener('click', showSignupForm);
+        document.getElementById('signupBtn').addEventListener('click', handleSignup);
+        document.getElementById('loginBtn').addEventListener('click', handleLogin);
+        mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+        
+        // Navigation
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const page = this.getAttribute('data-page');
+                navigateTo(page);
+                if (mobileMenu.classList.contains('hidden') === false) {
+                    toggleMobileMenu();
+                }
+            });
+        });
+        
+        // Initialize
+        checkAuth();
+        
+        // Functions
+        function toggleAuthModal() {
+            authModal.classList.toggle('hidden');
+            document.body.classList.toggle('overflow-hidden');
+        }
+        
+        function showLoginForm() {
+            signupForm.classList.add('hidden');
+            loginForm.classList.remove('hidden');
+            authTitle.textContent = 'Log In';
+        }
+        
+        function showSignupForm() {
+            loginForm.classList.add('hidden');
+            signupForm.classList.remove('hidden');
+            authTitle.textContent = 'Sign Up';
+        }
+        
+        function toggleMobileMenu() {
+            mobileMenu.classList.toggle('hidden');
+        }
+        
+        function handleSignup() {
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            
+            if (!name || !email || !password) {
+                alert('Please fill all fields');
+                return;
+            }
+            
+            // In a real app, this would be sent to a PHP backend
+            const user = {
+                name,
+                email,
+                password // In real app, this would be hashed
+            };
+            
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            localStorage.setItem('isLoggedIn', 'true');
+            isLoggedIn = true;
+            currentUser = user;
+            
+            toggleAuthModal();
+            checkAuth();
+        }
+        
+        function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                alert('Please fill all fields');
+                return;
+            }
+            
+            // In a real app, this would be verified against a PHP backend
+            const storedUser = JSON.parse(localStorage.getItem('currentUser')) || {};
+            
+            if (email === storedUser.email && password === storedUser.password) {
+                localStorage.setItem('isLoggedIn', 'true');
+                isLoggedIn = true;
+                currentUser = storedUser;
+                
+                toggleAuthModal();
+                checkAuth();
+            } else {
+                alert('Invalid credentials');
+            }
+        }
+        
+        function checkAuth() {
+            if (isLoggedIn) {
+                loginRequired.style.display = 'none';
+                authBtn.textContent = currentUser.name.split(' ')[0];
+                
+                pages.forEach(page => {
+                    page.style.display = 'none';
+                });
+                
+                const activePage = document.getElementById(currentPage + 'Page');
+                if (activePage) {
+                    activePage.style.display = 'block';
+                }
+            } else {
+                loginRequired.style.display = 'block';
+                authBtn.textContent = 'Sign Up';
+                
+                pages.forEach(page => {
+                    page.style.display = 'none';
+                });
+            }
+            
+            // Update active nav link
+            navLinks.forEach(link => {
+                if (link.getAttribute('data-page') === currentPage) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+        
+        function navigateTo(page) {
+            currentPage = page;
+            checkAuth();
+        }
+        
+        // Simulate PHP includes
+        function includeHTML() {
+            // This would normally fetch and include HTML files in a PHP environment
+            // For our SPA, we're handling page changes via JavaScript
+        }
+    </script>
+</body>
+</html>
